@@ -39,5 +39,11 @@ define kafka::topic(
       command => "kafka-topics.sh --create ${_zookeeper} ${_replication_factor} ${_partitions} --topic ${name} ${_config}",
       unless  => "kafka-topics.sh --list ${_zookeeper} | grep -x ${name}",
     }
+  } elsif $ensure == 'absent' {
+    exec { "delete topic ${name}":
+      path    => "/usr/bin:/usr/sbin/:/bin:/sbin:${bin_dir}",
+      command => "kafka-topics.sh --delete ${_zookeeper} --topic ${name}",
+      onlyif  => "kafka-topics.sh --list ${_zookeeper} | grep -x ${name}",
+    }
   }
 }
